@@ -1,28 +1,16 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-// import App from './App'
-// import router from './router'
+import App from './App'
+import router from './router'
+import './common/stylus/index.styl'
 
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-// new Vue({
-//   el: '#app',
-//   router,
-//   components: { App },
-//   template: '<App/>'
-// })
-
-const app = new Vue({
-  template: '<div>{{text}}</div>',
-  data: {
-    text: 0
-  }
+new Vue({
+  el: '#app',
+  router,
+  components: { App },
+  template: '<App/>'
 })
-
-app.$mount('#app')
-
-setInterval(() => {
-  app.text += 1
-}, 1000)
