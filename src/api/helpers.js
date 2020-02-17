@@ -7,8 +7,8 @@ export function get(url) {
     return axios.get(url, {
       params
     }).then((res) => {
-      const { error, data } = res.data
-      if (error == ERR_OK) {
+      const { errno, data } = res.data
+      if (errno === ERR_OK) {
         return data
       }
     }).catch(() => {
