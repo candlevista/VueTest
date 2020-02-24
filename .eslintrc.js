@@ -1,4 +1,4 @@
-// https://eslint.org/docs/user-guide/configuring
+ // https://eslint.org/docs/user-guide/configuring
 
 module.exports = {
   root: true,
@@ -23,6 +23,7 @@ module.exports = {
   rules: {
     // allow async-await
     'generator-star-spacing': 'off',
+    'space-before-function-paren': 0,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }

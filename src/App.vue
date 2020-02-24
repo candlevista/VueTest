@@ -1,23 +1,34 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+  <div>
+    <v-header :seller="seller"></v-header>
   </div>
 </template>
 
 <script>
+import header from 'components/header/header.vue'
+import { getSeller } from 'api/index.js'
+
 export default {
-  name: 'App'
+  data() {
+    return {
+      seller: {}
+    }
+  },
+  created() {
+    this.getSeller()
+  },
+  methods: {
+    getSeller() {
+      getSeller().then(data => {
+        this.seller = Object.assign({}, this.seller, data)
+      })
+    }
+  },
+  components: {
+    'v-header': header
+  }
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
