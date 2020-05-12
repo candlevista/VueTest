@@ -2,7 +2,13 @@
   <div class="goods">
     <div class="menu-wrapper" ref="menuWrapper">
       <ul>
-        <li v-for="(item, index) in goods" :key="index" class="menu-item">
+        <li
+          v-for="(item, index) in goods"
+          :key="index"
+          class="menu-item"
+          :class="{'current':currentIndex===index}"
+          @click="selectMenu(index, $event)"
+        >
           <span class="text">
             <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>
             {{item.name}}
@@ -51,25 +57,70 @@ export default {
   },
   data() {
     return {
-      goods: []
+      goods: [],
+      listHeight: [],
+      scrollY: 0
     }
   },
   created() {
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee']
     this.getGoods()
-    this.$nextTick(() => {
-      this.initScroll()
-    })
+  },
+  computed: {
+    currentIndex() {
+      for (let i = 0; i < this.listHeight.length; i++) {
+        let height1 = this.listHeight[i]
+        let height2 = this.listHeight[i + 1]
+        if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+          return i
+        }
+      }
+      return 0
+    }
   },
   methods: {
     getGoods() {
       getGoods().then(data => {
         this.goods = data
+        this.$nextTick(() => {
+          this.initScroll()
+          this.calculateHeight()
+        })
       })
     },
     initScroll() {
-      this.menuScroll = new BScroll(this.$refs.menuWrapper, {})
-      this.foodScroll = new BScroll(this.$refs.foodWrapper, {})
+      this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+        click: true
+      })
+      this.foodScroll = new BScroll(this.$refs.foodWrapper, {
+        probeType: 3
+      })
+      this.foodScroll.on('scroll', pos => {
+        // 判断滑动方向，避免下拉时分类高亮错误（如第一分类商品数量为1时，下拉使得第二分类高亮）
+        if (pos.y <= 0) {
+          this.scrollY = Math.abs(Math.round(pos.y))
+        }
+      })
+    },
+    selectMenu(index, event) {
+      // PC端操作时此方法会调用两次，一次是BScroll所派发的事件，一次是浏览器原生的事件，移动端没此问题
+      // BScroll所派发的事件与浏览器原生的事件的区别是原生事件没有_constructed
+      if (!event._constructed) {
+        return
+      }
+      let foodList = this.$refs.foodList
+      let ele = foodList[index]
+      this.foodScroll.scrollToElement(ele, 300)
+    },
+    calculateHeight() {
+      let foodList = this.$refs.foodList
+      let height = 0
+      this.listHeight.push(height)
+      for (let i = 0; i < foodList.length; i++) {
+        let item = foodList[i]
+        height += item.clientHeight
+        this.listHeight.push(height)
+      }
     }
   }
 }
@@ -97,6 +148,14 @@ export default {
       width 64px
       margin 0 8px
       border-1px(rgba(7, 17, 27, 0.1))
+      &.current
+        position relative
+        z-index 10
+        margin-top -1px
+        background #fff
+        font-weight 700
+        .text
+          border-none()
       .icon
         display inline-block
         vertical-align top
