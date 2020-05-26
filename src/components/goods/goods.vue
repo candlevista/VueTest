@@ -42,12 +42,14 @@
         </li>
       </ul>
     </div>
+    <shopcart></shopcart>
   </div>
 </template>
 
 <script>
 import { getGoods } from 'api/index.js'
 import BScroll from 'better-scroll'
+import shopcart from 'components/shopcart/shopcart'
 
 export default {
   props: {
@@ -122,6 +124,9 @@ export default {
         this.listHeight.push(height)
       }
     }
+  },
+  components: {
+    shopcart
   }
 }
 </script>
