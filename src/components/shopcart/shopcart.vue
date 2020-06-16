@@ -156,8 +156,16 @@ export default {
     },
     listShow() {
       if (!this.totalCount) {
-        this.fold = true
         return false
+      }
+      let show = !this.fold      
+      return show
+    }
+  },
+  watch: {
+    listShow: function(newValue, oldValue) {
+      if (!this.totalCount) {
+        this.fold = true
       }
       let show = !this.fold
       if (show) {
@@ -171,7 +179,6 @@ export default {
           }
         })
       }
-      return show
     }
   },
   components: {
