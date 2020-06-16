@@ -36,7 +36,7 @@
                   <span class="now">￥{{food.price}}</span>
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   <div class="cartcontrol-wrappar">
-                    <cartcontrol :food="food"></cartcontrol>
+                    <cartcontrol @add="addFood" :food="food"></cartcontrol>
                   </div>
                 </div>
               </div>
@@ -45,7 +45,11 @@
         </li>
       </ul>
     </div>
-    <shopcart :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shopcart>
+    <shopcart
+      :selectFoods="selectFoods"
+      :deliveryPrice="seller.deliveryPrice"
+      :minPrice="seller.minPrice"
+    ></shopcart>
   </div>
 </template>
 
@@ -82,6 +86,17 @@ export default {
         }
       }
       return 0
+    },
+    selectFoods() {
+      let foods = []
+      this.goods.forEach(good => {
+        good.foods.forEach(food => {
+          if (food.count) {
+            foods.push(food)
+          }
+        })
+      })
+      return foods
     }
   },
   methods: {
@@ -99,7 +114,8 @@ export default {
         click: true
       })
       this.foodScroll = new BScroll(this.$refs.foodWrapper, {
-        probeType: 3
+        probeType: 3,
+        click: true
       })
       this.foodScroll.on('scroll', pos => {
         // 判断滑动方向，避免下拉时分类高亮错误（如第一分类商品数量为1时，下拉使得第二分类高亮）
@@ -127,7 +143,8 @@ export default {
         height += item.clientHeight
         this.listHeight.push(height)
       }
-    }
+    },
+    addFood() {}
   },
   components: {
     shopcart,
@@ -240,7 +257,7 @@ export default {
             font-size 10px
             color rgb(147, 153, 159)
           .cartcontrol-wrappar
-            position absolute            
-            right: 0
-            bottom: 12px
+            position absolute
+            right 0
+            bottom 12px
 </style>
