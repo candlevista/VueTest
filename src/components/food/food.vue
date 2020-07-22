@@ -1,24 +1,38 @@
 <template>
   <transition name="move">
     <div class="food" v-show="showFlag" ref="food">
-      <div class="image-header">
-        <img :src="food.image" />
-        <div class="back" @click="hide"></div>
-      </div>
-      <div class="content">
-        <h1 class="title">{{food.name}}</h1>
-        <div class="detil">
-          <span class="sell-count">月售{{food.sellCount}}份</span>
-          <span class="rating">好评率{{food.rating}}%</span>
+      <div class="food-content">
+        <div class="image-header">
+          <img :src="food.image" />
+          <div class="back" @click="hide"></div>
         </div>
-        <div class="price">
-          <span class="now">￥{{food.price}}</span>
-          <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+        <div class="content">
+          <h1 class="title">{{food.name}}</h1>
+          <div class="detil">
+            <span class="sell-count">月售{{food.sellCount}}份</span>
+            <span class="rating">好评率{{food.rating}}%</span>
+          </div>
+          <div class="price">
+            <span class="now">￥{{food.price}}</span>
+            <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+          </div>
+          <div class="cartcontrol" v-show="food.count>0">
+            <cartcontrol :food="food" @add="addFood"></cartcontrol>
+          </div>
+          <div class="buy" @click="addFirst" v-show="!food.count || food.count===0">加入购物车</div>
         </div>
-        <div class="cartcontrol" v-show="food.count>0">
-          <cartcontrol :food="food" @add="addFood"></cartcontrol>
+        <split></split>
+        <div class="info" v-show="food.info">
+          <h1 class="title">商品介绍</h1>
+          <p class="text">{{food.info}}</p>
         </div>
-        <div class="buy" @click="addFirst" v-show="!food.count || food.count===0">加入购物车</div>
+        <split></split>
+        <div>
+          <h1 class="title">商品评价</h1>
+          <div>
+            <ratingselect></ratingselect>
+          </div>
+        </div>
       </div>
     </div>
   </transition>
@@ -27,6 +41,8 @@
 <script>
 import BScroll from 'better-scroll'
 import cartcontrol from 'components/cartcontrol/cartcontrol'
+import split from 'components/split/split'
+import ratingselect from 'components/ratingselect/ratingselect'
 import Vue from 'vue'
 
 export default {
@@ -68,7 +84,9 @@ export default {
     }
   },
   components: {
-    cartcontrol
+    cartcontrol,
+    split,
+    ratingselect
   }
 }
 </script>
@@ -154,4 +172,16 @@ export default {
       color #fff
       background rgb(0, 160, 220)
       opacity 1
+  .info
+    padding 18px
+    .title
+      line-height 14px
+      margin-bottom 6px
+      font-size 14px
+      color rgb(7, 17, 27)
+    .text
+      line-height 24px
+      padding 0 8px
+      font-size 12px
+      color rgb(77, 85, 93)
 </style>
