@@ -27,10 +27,37 @@
           <p class="text">{{food.info}}</p>
         </div>
         <split></split>
-        <div>
+        <div class="rating">
           <h1 class="title">商品评价</h1>
           <div>
-            <ratingselect></ratingselect>
+            <ratingselect
+              @selectTypeAction="selectTypeAction"
+              @onlyContentAction="onlyContentAction"
+              :selectType="selectType"
+              :onlyContent="onlyContent"
+              :desc="desc"
+              :ratings="food.ratings"
+            ></ratingselect>
+          </div>
+          <div class="rating-wrapper">
+            <ul v-show="food.ratings && food.ratings.length">
+              <li
+                v-show="needShow(rating.rateType,rating.text)"
+                class="rating-item"
+                v-for="(rating, index) in food.ratings"
+                :key="index"
+              >
+                <div class="user">
+                  <span class="name">{{rating.username}}</span>
+                  <img class="avatar" width="12" height="12" :src="rating.avatar" />
+                </div>
+                <div class="time">{{rating.rateTime | formatDate}}</div>
+                <div class="content-wrappar">
+                  <div class="thumbs" :class="{active:rating.rateType===0}"></div>
+                  <p class="text">{{rating.text}}</p>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -43,7 +70,10 @@ import BScroll from 'better-scroll'
 import cartcontrol from 'components/cartcontrol/cartcontrol'
 import split from 'components/split/split'
 import ratingselect from 'components/ratingselect/ratingselect'
+import { formatDate } from 'common/js/date'
 import Vue from 'vue'
+
+const ALL = 2
 
 export default {
   props: {
@@ -53,10 +83,33 @@ export default {
   },
   data() {
     return {
-      showFlag: false
+      showFlag: false,
+      onlyContent: false,
+      selectType: ALL,
+      desc: {
+        all: '全部',
+        positive: '推荐',
+        negative: '吐槽'
+      }
+    }
+  },
+  filters: {
+    formatDate(time) {
+      let date = new Date(time)
+      return formatDate(date, 'yyyy-MM-dd hh:mm')
     }
   },
   methods: {
+    needShow(type, text) {
+      if (this.onlyContent && !text) {
+        return false
+      }
+      if (this.selectType === ALL) {
+        return true
+      } else {
+        return type === this.selectType
+      }
+    },
     hide() {
       this.showFlag = false
     },
@@ -81,6 +134,18 @@ export default {
       }
       this.$emit('add', event.target)
       Vue.set(this.food, 'count', 1)
+    },
+    selectTypeAction(type) {
+      this.selectType = type
+      this.$nextTick(() => {
+        this.scroll.refresh()
+      })
+    },
+    onlyContentAction() {
+      this.onlyContent = !this.onlyContent
+      this.$nextTick(() => {
+        this.scroll.refresh()
+      })
     }
   },
   components: {
@@ -92,6 +157,8 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../common/stylus/mixin.styl'
+
 .food
   position fixed
   top 0
@@ -184,4 +251,52 @@ export default {
       padding 0 8px
       font-size 12px
       color rgb(77, 85, 93)
+  .rating
+    padding 18px
+    border-1px(rgba(7, 17, 27, 0.1))
+    .title
+      line-height 14px
+      margin-bottom 6px
+      font-size 14px
+      color rgb(7, 17, 27)
+    .rating-wrapper .rating-item
+      position relative
+      padding 16px 0
+      border-1px(rgba(7, 17, 27, 0.1))
+      .user
+        position absolute
+        right 0
+        top 16px
+        line-height 12px
+        font-size 0
+        .name
+          display inline-block
+          margin-right 6px
+          vertical-align top
+          font-size 10px
+          color rgb(147, 153, 159)
+        .avatar
+          border-radius 50%
+      .time
+        margin-bottom 6px
+        line-height 12px
+        font-size 10px
+        color rgb(147, 153, 159)
+      .content-wrappar
+        margin-top 6px
+        font-size 0
+        .thumbs
+          display inline-block
+          margin-right 6px
+          width 16px
+          height 16px
+          background-color rgb(147, 153, 159)
+          &.active
+            background rgb(0, 160, 220)
+        .text
+          display inline-block
+          vertical-align top
+          font-size 12px
+          line-height 16px
+          color rgb(7, 17, 27)
 </style>
